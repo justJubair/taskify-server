@@ -1,5 +1,5 @@
 require("dotenv").config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require("express");
 const cors = require("cors");
 const app = express()
@@ -32,6 +32,23 @@ async function run() {
     app.get("/tasks", async(req, res)=> {
         const result = await tasksCollection.find().toArray();
         res.send(result);
+    })
+
+    // PATCH; task attachment number
+    app.patch("/task/:id", async(req,res)=>{
+        const id = req?.params?.id;
+        const attachments = req?.body;
+        
+        const filter = {_id: new ObjectId(id)}
+        const task = await tasksCollection.findOne(filter)
+       const updatedAttachments = attachments?.count + task?.attachment_counts
+        const updatedTask = {
+            $set: {
+                attachment_counts: updatedAttachments
+            }
+        }
+        const result = await tasksCollection.updateOne(filter, updatedTask)
+        res.send(result)
     })
 
 
