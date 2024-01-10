@@ -48,7 +48,7 @@ async function run() {
             }
         }
         const result = await tasksCollection.updateOne(filter, updatedTask)
-        res.send(result)
+        res.send({result, updatedAttachments})
     })
 
 
